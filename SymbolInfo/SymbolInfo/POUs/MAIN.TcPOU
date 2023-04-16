@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="MAIN" Id="{273e0de6-0218-4241-86c7-fadef2e6f7bb}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR	
+	nState 		    : INT := 0;
+
+	// FBs to get PLC symbol information by symbol's name 
+	fbSymbInfo		: PLC_ReadSymInfoByName := ( PORT := 851, TMOUT := DEFAULT_ADS_TIMEOUT );
+	stSymbolInfo	: Tc2_Utilities.SYMINFOSTRUCT;
+
+	// FB to change a plc variable by index of group and offset 
+	fbWriteReq      : ADSWRITE := ( NETID := '', PORT := 851, TMOUT := DEFAULT_ADS_TIMEOUT );
+	
+    Variable_Name   : STRING := 'globals.device_1.value';
+	Variable_Value  : DINT := 0;	
+	
+	bFirst			: BOOL := TRUE;
+	fbRandom		: DRand;
+	
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[CASE nState OF 
+
+	0:  // reset FB if required
+		IF (fbSymbInfo.START AND NOT fbSymbInfo.BUSY) THEN
+			fbSymbInfo(START:= FALSE);
+		END_IF
+		// read symbol information
+		fbSymbInfo
+    	( 
+			symname := 	Variable_Name,
+			syminfo => stSymbolInfo,
+			start:= TRUE
+		);
+		// get the result
+		IF (fbSymbInfo.BUSY = FALSE) THEN
+	 		IF (fbSymbInfo.ERR) THEN
+				nState := 99;
+			ELSE
+				nState := nState +1;
+			END_IF
+		END_IF
+	
+	1:	// reset FB if required
+		IF (fbWriteReq.WRITE AND NOT fbWriteReq.BUSY) THEN
+			fbWriteReq(WRITE:= FALSE);
+		END_IF
+		// execute write request
+		fbWriteReq(
+			IDXGRP:= stSymbolInfo.idxGroup, 
+			IDXOFFS:= stSymbolInfo.idxOffset, 
+			LEN:= stSymbolInfo.byteSize, 
+			SRCADDR:= ADR(Variable_Value),
+			WRITE := TRUE );
+		// get the result
+		IF (NOT fbWriteReq.BUSY) THEN
+	 		IF (fbWriteReq.ERR) THEN
+				nState := 99;
+			ELSE
+				nState := 100;
+			END_IF
+		END_IF
+	99:
+		; // Error
+		
+	100: // Done
+		
+		// switch to other variable and apply different value 
+		
+		IF (bFirst) THEN fbRandom( Seed:= 4711); bFirst:= FALSE; END_IF
+		fbRandom();
+		Variable_Value := LREAL_TO_DINT (fbRandom.Num * 42);
+	
+		IF (Variable_Name = 'globals.device_1.value') THEN Variable_Name := 'globals.device_2.value'; END_IF
+		
+		nState := 0; 
+
+END_CASE
+
+
+
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="294" Count="2" />
+      <LineId Id="370" Count="1" />
+      <LineId Id="369" Count="0" />
+      <LineId Id="372" Count="0" />
+      <LineId Id="297" Count="15" />
+      <LineId Id="357" Count="0" />
+      <LineId Id="355" Count="1" />
+      <LineId Id="358" Count="0" />
+      <LineId Id="313" Count="0" />
+      <LineId Id="334" Count="4" />
+      <LineId Id="359" Count="0" />
+      <LineId Id="314" Count="6" />
+      <LineId Id="323" Count="1" />
+      <LineId Id="373" Count="0" />
+      <LineId Id="360" Count="0" />
+      <LineId Id="375" Count="0" />
+      <LineId Id="378" Count="0" />
+      <LineId Id="380" Count="1" />
+      <LineId Id="389" Count="1" />
+      <LineId Id="374" Count="0" />
+      <LineId Id="362" Count="0" />
+      <LineId Id="361" Count="0" />
+      <LineId Id="377" Count="0" />
+      <LineId Id="325" Count="5" />
+      <LineId Id="20" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
