@@ -9,9 +9,9 @@
 			</Tasks>
 		</System>
 		<Plc>
-			<Project GUID="{79737F47-EA84-40A8-AF7C-32E3BFD408A0}" Name="SymbolInfo" PrjFilePath="SymbolInfo\SymbolInfo.plcproj" TmcFilePath="SymbolInfo\SymbolInfo.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="SymbolInfoPLC\SymbolInfoPLC.tmc" TmcHash="{7744335E-3FDA-9AAD-68B3-41FBF0577506}">
-					<Name>SymbolInfo Instance</Name>
+			<Project GUID="{79737F47-EA84-40A8-AF7C-32E3BFD408A0}" Name="SymbolInfoPLC" PrjFilePath="SymbolInfoPLC\SymbolInfoPLC.plcproj" TmcFilePath="SymbolInfoPLC\SymbolInfoPLC.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="SymbolInfo\SymbolInfo.tmc" TmcHash="{8AEF5385-41A0-FC84-CFC6-F7299722F17F}">
+					<Name>SymbolInfoPLC Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Contexts>
 						<Context>
