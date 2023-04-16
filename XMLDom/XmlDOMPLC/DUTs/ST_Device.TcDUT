@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="ST_Device" Id="{acacad37-7f3f-446f-8863-361848d78fd9}">
+    <Declaration><![CDATA[TYPE ST_Device :
+STRUCT
+	value : DINT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

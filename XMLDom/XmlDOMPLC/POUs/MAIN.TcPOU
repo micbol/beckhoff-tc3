@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="MAIN" Id="{273e0de6-0218-4241-86c7-fadef2e6f7bb}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	
+  fbXml : FB_XmlDomParser;
+  xmlDoc : SXmlNode;
+  xmlConfig : SXmlNode;
+  xmlParam : SXmlNode;
+  xmlIterator : SXmlIterator;
+  xmlParamNode : SXmlNode;
+  xmlParamNodeValue : STRING;
+  xmlParamNodeADSType : STRING;
+  xmlParamNodePath : STRING;
+		
+	sMessageToParse : STRING(255) := '<Config><Parameter Path="device_1.value" ADSType="DINT">42</Parameter><Parameter Path="device_2.value" ADSType="DINT">24</Parameter></Config>';
+	nState : INT := 0;
+	
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+
+CASE nState OF 
+
+	0 : (* Load XML content *)
+			xmlDoc := fbXml.ParseDocument(sMessageToParse);
+			nState := nState + 1;
+			
+	1:
+			(* Parse XML nodes *)
+			xmlConfig := fbXml.ChildByName(xmlDoc, 'Config');
+			xmlIterator := fbXml.Begin(xmlConfig);
+			nState := nState + 1;
+					
+	2:	IF (fbXml.IsEnd(xmlIterator)) THEN 
+				nState:= nState +1; 
+			ELSE
+				xmlParamNode := fbXml.Node(xmlIterator);
+  			xmlParamNodePath :=  fbXml.AttributeText(fbXml.Attribute(n:= xmlParamNode, name:='Path'));
+  			xmlParamNodeADSType := fbXml.AttributeText(fbXml.Attribute(n:= xmlParamNode, name:='ADSType'));
+  			xmlParamNodeValue := fbXml.NodeText(xmlParamNode);	
+  			xmlIterator := fbXml.Next(xmlIterator);							
+			END_IF
+ 		
+	3:
+			xmlIterator := fbXml.End(xmlConfig);
+			nState := nState + 1;
+			
+	4:
+			// Error, Done
+	
+END_CASE
+
+
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="322" Count="1" />
+      <LineId Id="325" Count="0" />
+      <LineId Id="331" Count="0" />
+      <LineId Id="334" Count="1" />
+      <LineId Id="339" Count="1" />
+      <LineId Id="338" Count="0" />
+      <LineId Id="357" Count="0" />
+      <LineId Id="341" Count="1" />
+      <LineId Id="373" Count="0" />
+      <LineId Id="360" Count="0" />
+      <LineId Id="364" Count="0" />
+      <LineId Id="374" Count="0" />
+      <LineId Id="381" Count="0" />
+      <LineId Id="385" Count="0" />
+      <LineId Id="387" Count="1" />
+      <LineId Id="390" Count="0" />
+      <LineId Id="389" Count="0" />
+      <LineId Id="375" Count="0" />
+      <LineId Id="391" Count="0" />
+      <LineId Id="365" Count="0" />
+      <LineId Id="377" Count="1" />
+      <LineId Id="392" Count="0" />
+      <LineId Id="379" Count="0" />
+      <LineId Id="356" Count="0" />
+      <LineId Id="326" Count="1" />
+      <LineId Id="324" Count="0" />
+      <LineId Id="264" Count="1" />
+      <LineId Id="20" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
