@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="EN_ADS_TYPE_ID" Id="{970c91a5-4ce6-4ab0-9239-098cd7d33b09}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+
+// Obsolete! Already exists as ADSDATATYPEID
+
+//TYPE EN_ADS_TYPE_ID :
+//(
+//	  ADST_VOID    := 0,
+//    ADST_INT8    := 16,
+//    ADST_UINT8   := 17,
+//    ADST_INT16   := 2,
+//    ADST_UINT16  := 18,
+//    ADST_INT32   := 3,
+//    ADST_UINT32  := 19,
+//    ADST_INT64   := 20,
+//    ADST_UINT64  := 21,
+//    ADST_REAL32  := 4,
+//    ADST_REAL64  := 5,
+//    ADST_BIGTYPE := 65,
+//    ADST_STRING  := 30,
+//    ADST_WSTRING := 31,
+//    ADST_REAL80  := 32,
+//    ADST_BIT     := 33
+//);
+//END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

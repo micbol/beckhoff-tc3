@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="DUT" Id="{05ac455e-f286-4c46-88c5-62a6ba70affe}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE DUT :
+(
+	enum_member := 0,
+	enum_mem2 := 10
+	
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

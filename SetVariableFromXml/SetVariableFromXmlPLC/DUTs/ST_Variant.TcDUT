@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="ST_Variant" Id="{a1b753d9-f20e-4db7-8a4d-b14fb4d1bbce}">
+    <Declaration><![CDATA[TYPE ST_Variant :
+UNION
+	nBit		: BOOL;
+	nI8			: SINT;
+	nUI8		: USINT;
+	nI16		: INT;
+	nUI16		: UINT;
+	nI32		: DINT;
+	nUI32		: UDINT;
+	nI64		: LINT;
+	nUI64   : ULINT;
+	fR32		: REAL;
+	fR64		: LREAL;
+END_UNION
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

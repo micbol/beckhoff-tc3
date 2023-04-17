@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_WriteVariableByName" Id="{f0cbcd71-a206-42a6-9949-9cd5a3db7fae}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_WriteVariableByName
+
+VAR_INPUT
+	sName  : STRING;
+	sValue : STRING;
+	bExec  : BOOL;
+END_VAR
+
+VAR_OUTPUT
+	Busy   : BOOL := FALSE;
+	Error  : BOOL := FALSE;
+	Done   :  BOOL := FALSE;
+END_VAR
+
+VAR
+	nState 	: INT := 0;
+	rtrig  	: R_TRIG;
+	
+	fbSymInfo		: PLC_ReadSymInfoByName := ( PORT := 851, TMOUT := DEFAULT_ADS_TIMEOUT );
+  stSymbolInfo	: Tc2_Utilities.SYMINFOSTRUCT;
+  fbWriteReq    : ADSWRITE := ( NETID := '', PORT := 851, TMOUT := DEFAULT_ADS_TIMEOUT );
+	
+	// Native variables for various datatypes that can be set in XML.
+	// Depending on the type one variable is selected to receive the string conversion result.
+  // The address will be used as data input of ADSWRITE-FB.
+  
+	var_data : ST_VARIANT; 
+	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[ 
+rtrig(CLK:= bExec , Q=> );
+
+ CASE nState OF
+
+	0:	// Wait for request
+		IF (NOT bExec) THEN
+			error := FALSE; done := FALSE;
+		END_IF
+
+		IF (rtrig.Q) THEN
+			Busy:= TRUE;
+			nState:= nState + 1;
+		END_IF
+
+	1:
+		// reset FB
+		IF (fbSymInfo.START AND NOT fbSymInfo.BUSY) THEN
+			fbSymInfo( START:= FALSE);
+		END_IF
+		// get symbol information
+		fbSymInfo
+    ( 
+		 	symname := sName,
+	   	syminfo => stSymbolInfo,
+	   	start:= TRUE
+		);
+		// 
+		IF (NOT fbSymInfo.BUSY) THEN
+	 	  IF (fbSymInfo.ERR) THEN
+				nState := 99;
+		  ELSE
+				IF (F_ParseToVariant (adsTypeID:= stSymbolInfo.adsDataType,
+							                sValue:= sValue, var_data:= var_data))
+				THEN
+					nState := nState + 1;
+				ELSE
+					nState := 99;
+				END_IF
+		  END_IF
+		END_IF
+		
+	2:	// write the value
+		
+		// reset FB
+		IF (fbWriteReq.WRITE AND NOT fbWriteReq.BUSY) THEN
+			fbWriteReq(WRITE := FALSE);
+		END_IF
+		// write variable
+		fbWriteReq
+		(
+			IDXGRP:= stSymbolInfo.idxGroup, 
+			IDXOFFS:= stSymbolInfo.idxOffset,
+			SRCADDR := ADR(var_data),
+			LEN := stSymbolInfo.byteSize,
+			WRITE := TRUE 
+		);
+		IF (NOT fbWriteReq.BUSY) THEN
+	 		IF (fbWriteReq.ERR) THEN
+			  nState := 99;
+			ELSE
+			  nState := 100;
+			END_IF
+		END_IF
+	
+	99:	// Error
+		busy := FALSE;
+		error := TRUE;
+		nState := 0;
+				
+	100: // Success
+		busy := FALSE;
+		done := TRUE;
+		nState := 0;
+ 
+ END_CASE]]></ST>
+    </Implementation>
+    <LineIds Name="FB_WriteVariableByName">
+      <LineId Id="654" Count="11" />
+      <LineId Id="667" Count="19" />
+      <LineId Id="821" Count="0" />
+      <LineId Id="832" Count="0" />
+      <LineId Id="834" Count="0" />
+      <LineId Id="823" Count="0" />
+      <LineId Id="742" Count="6" />
+      <LineId Id="826" Count="0" />
+      <LineId Id="829" Count="0" />
+      <LineId Id="827" Count="1" />
+      <LineId Id="825" Count="0" />
+      <LineId Id="830" Count="0" />
+      <LineId Id="749" Count="3" />
+      <LineId Id="820" Count="0" />
+      <LineId Id="819" Count="0" />
+      <LineId Id="753" Count="7" />
+      <LineId Id="762" Count="11" />
+      <LineId Id="19" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

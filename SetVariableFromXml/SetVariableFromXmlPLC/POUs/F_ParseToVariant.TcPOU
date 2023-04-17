@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="F_ParseToVariant" Id="{20cf5fb8-5dd5-47c0-90b2-4963bf0c31dd}" SpecialFunc="None">
+    <Declaration><![CDATA[//
+// Currently unsupported types:
+//
+// ADSDATATYPEID.ADST_BIGTYPE;
+// ADSDATATYPEID.ADST_REAL80;
+// ADSDATATYPEID.ADST_VOID;
+// ADSDATATYPEID.ADST_STRING
+// ADSDATATYPEID.ADST_WSTRING
+
+FUNCTION F_ParseToVariant : bool
+VAR_INPUT
+	adsTypeID  : ADSDATATYPEID;
+	sValue		 : STRING;
+END_VAR
+VAR_IN_OUT
+		var_data : ST_VARIANT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+	F_ParseToVariant:= TRUE;	
+	
+	CASE adsTypeID OF 
+		
+		ADSDATATYPEID.ADST_INT8:
+			var_data.nI8 := STRING_TO_SINT(sValue);
+
+		ADSDATATYPEID.ADST_UINT8:
+			var_data.nUI8 := STRING_TO_USINT(sValue);
+					
+		ADSDATATYPEID.ADST_INT16:
+			var_data.nI16 := STRING_TO_INT(sValue);
+		
+		ADSDATATYPEID.ADST_UINT16:
+			var_data.nUI16 := STRING_TO_UINT(sValue);
+						
+		ADSDATATYPEID.ADST_INT32:
+			var_data.nI32 := STRING_TO_DINT(sValue);
+
+		ADSDATATYPEID.ADST_UINT32:
+			var_data.nUI32 := STRING_TO_UDINT(sValue);
+			
+		ADSDATATYPEID.ADST_INT64:
+			var_data.nI64 := STRING_TO_LINT(sValue);
+
+		ADSDATATYPEID.ADST_UINT64:
+			var_data.nUI64 := STRING_TO_ULINT(sValue);			
+
+		ADSDATATYPEID.ADST_REAL32:
+			var_data.fR32 := STRING_TO_REAL(sValue);
+						
+		ADSDATATYPEID.ADST_REAL64:
+			var_data.fR64 := STRING_TO_LREAL(sValue);
+			
+		ADSDATATYPEID.ADST_BIT:
+			var_data.nBit := INT_TO_BOOL(STRING_TO_INT(sValue));
+
+		ELSE
+			F_ParseToVariant:= FALSE;	
+		END_CASE]]></ST>
+    </Implementation>
+    <LineIds Name="F_ParseToVariant">
+      <LineId Id="57" Count="0" />
+      <LineId Id="15" Count="1" />
+      <LineId Id="58" Count="0" />
+      <LineId Id="17" Count="2" />
+      <LineId Id="21" Count="2" />
+      <LineId Id="25" Count="2" />
+      <LineId Id="29" Count="2" />
+      <LineId Id="33" Count="2" />
+      <LineId Id="37" Count="2" />
+      <LineId Id="67" Count="0" />
+      <LineId Id="74" Count="3" />
+      <LineId Id="68" Count="0" />
+      <LineId Id="41" Count="2" />
+      <LineId Id="45" Count="2" />
+      <LineId Id="49" Count="2" />
+      <LineId Id="53" Count="2" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

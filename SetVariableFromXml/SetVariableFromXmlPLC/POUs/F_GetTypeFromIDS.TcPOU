@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="F_GetTypeFromIDS" Id="{95811749-f2d2-4d92-8ac8-a98aa5296be5}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION F_GetTypeFromIDS : DINT
+VAR_INPUT
+	ids : STRING;
+END_VAR
+
+VAR
+  arIDS_ADSTypes : ARRAY[0 .. 15] OF STRING := 
+	[
+		'VOID',
+	  'INT8',
+	  'UINT8',
+	  'INT16', 
+    'UINT16',
+		'INT32',
+    'UINT32',
+    'INT64',
+    'UINT64',
+    'REAL32',
+    'REAL64',
+    'BIGTYPE',
+    'STRING',
+    'WSTRING',
+    'REAL80',
+		'BIT' 
+	];
+										
+  arID_ADSTypes  : ARRAY[0 .. 15] OF DINT := 
+	[	
+		ADSDATATYPEID.ADST_VOID,
+		ADSDATATYPEID.ADST_INT8,
+		ADSDATATYPEID.ADST_UINT8,
+		ADSDATATYPEID.ADST_INT16,
+		ADSDATATYPEID.ADST_UINT8,
+		ADSDATATYPEID.ADST_INT32,
+		ADSDATATYPEID.ADST_UINT32,
+		ADSDATATYPEID.ADST_INT64,
+		ADSDATATYPEID.ADST_UINT64,
+		ADSDATATYPEID.ADST_REAL32,
+		ADSDATATYPEID.ADST_REAL64,
+		ADSDATATYPEID.ADST_BIGTYPE,
+		ADSDATATYPEID.ADST_STRING,
+		ADSDATATYPEID.ADST_WSTRING,
+		ADSDATATYPEID.ADST_REAL80,
+		ADSDATATYPEID.ADST_BIT
+	];
+  
+	ix   : INT;
+  wids : WSTRING(32);
+
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+F_GetTypeFromIDS := -1; // invalid
+
+FOR ix := 0 TO 15 BY 1 DO 
+ IF ids = arIDS_ADSTypes[ix] THEN 
+ 	F_GetTypeFromIDS:= arID_ADSTypes[ix];
+	RETURN;
+ END_IF; 
+END_FOR; 
+
+RETURN;
+]]></ST>
+    </Implementation>
+    <LineIds Name="F_GetTypeFromIDS">
+      <LineId Id="209" Count="0" />
+      <LineId Id="146" Count="1" />
+      <LineId Id="150" Count="7" />
+      <LineId Id="10" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="MAIN" Id="{273e0de6-0218-4241-86c7-fadef2e6f7bb}" SpecialFunc="None">
+    <Declaration><![CDATA[// Brief
+// Reads XML string that holds initial value of variable "globals.machine.state"
+// The XML is parsed and the value is applied by accessing the variable through its symbolic name.
+
+PROGRAM MAIN
+VAR
+  fbXml 							: FB_XmlDomParser;
+  xmlDoc 							: SXmlNode;
+  xmlConfig 					: SXmlNode;
+  xmlParam 						: SXmlNode;
+  xmlIterator   			: SXmlIterator;
+  xmlParamNode        : SXmlNode;
+  xmlParamNodeValue   : STRING;
+  xmlParamNodeTCType  : STRING;
+  xmlParamNodeADSType : STRING;
+  xmlParamNodePath    : STRING;
+  
+  nState 							: INT := 0;
+  
+  ads_type 						:  DINT;
+  fbVarWriter 				: FB_WriteVariableByName;
+  
+  sMessageToParse : STRING(1024) := 
+'<Config>
+	<Parameter Path="globals.device_1.dint_value" TCType="DINT" ADSType="INT32">42</Parameter>
+ 	<Parameter Path="globals.device_1.real_value" TCType="REAL" ADSType="REAL32">3.1452</Parameter>
+ 	<Parameter Path="globals.device_2.bit_value" TCType="BIT" ADSType="BIT">1</Parameter>
+</Config>';
+
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[CASE nState OF 
+	
+	0:
+		(* Load XML content *)
+		xmlDoc := fbXml.ParseDocument(sMessageToParse);
+		xmlConfig := fbXml.ChildByName(xmlDoc, 'Config');
+		xmlIterator := fbXml.Begin(xmlConfig);
+		nState := nState + 1;
+	
+	1:	
+		(* parse XML nodes *)
+		IF (fbXml.IsEnd(xmlIterator)) THEN
+  		xmlIterator := fbXml.End(xmlConfig);		
+			nState := 100;
+		ELSE
+		  xmlParamNode        := fbXml.Node(xmlIterator);
+  		xmlParamNodePath    :=  fbXml.AttributeText(fbXml.Attribute(n:= xmlParamNode, name:='Path'));
+  		xmlParamNodeADSType := fbXml.AttributeText(fbXml.Attribute(n:= xmlParamNode, name:='ADSType'));
+			xmlParamNodeValue   := fbXml.NodeText(xmlParamNode);
+			// move next node
+			xmlIterator := fbXml.Next(xmlIterator);
+  		nState := nState + 1;
+		END_IF
+		
+	2:	// get the variable type
+	  ads_type := F_GetTypeFromIDS( xmlParamNodeADSType);
+		IF (ads_type < 0) THEN // Unsupported type. For now we will end with error.
+			nState := 99;
+		ELSE 
+			nState := nState + 1;
+		END_IF
+		
+	3: 	
+			IF (fbVarWriter.bExec AND NOT fbVarWriter.Busy) THEN
+				fbVarWriter( bExec := FALSE);
+			END_IF
+			fbVarWriter
+			(
+				bExec  := TRUE,
+				sName  := xmlParamNodePath,
+				sValue := xmlParamNodeValue
+			);
+			IF (NOT fbVarWriter.Busy) THEN
+				IF (fbVarWriter.Error) THEN
+					;
+				END_IF
+				fbVarWriter( bExec := FALSE);
+				nState := 1;
+			END_IF
+		
+	99:	 // Error
+	
+	100: // Finished
+
+END_CASE
+
+
+
+
+
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="549" Count="8" />
+      <LineId Id="616" Count="0" />
+      <LineId Id="558" Count="1" />
+      <LineId Id="622" Count="0" />
+      <LineId Id="560" Count="2" />
+      <LineId Id="564" Count="1" />
+      <LineId Id="630" Count="0" />
+      <LineId Id="628" Count="1" />
+      <LineId Id="566" Count="11" />
+      <LineId Id="624" Count="0" />
+      <LineId Id="631" Count="1" />
+      <LineId Id="620" Count="0" />
+      <LineId Id="578" Count="4" />
+      <LineId Id="634" Count="0" />
+      <LineId Id="636" Count="1" />
+      <LineId Id="639" Count="0" />
+      <LineId Id="635" Count="0" />
+      <LineId Id="641" Count="0" />
+      <LineId Id="633" Count="0" />
+      <LineId Id="594" Count="0" />
+      <LineId Id="600" Count="1" />
+      <LineId Id="603" Count="8" />
+      <LineId Id="20" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
